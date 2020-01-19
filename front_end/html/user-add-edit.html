@@ -1,0 +1,10 @@
+<form>
+    <label>Username</label> <input ng-model="info.username" />
+    <label>Phone</label> <input ng-model="info.phone" />
+    <label>Email</label> <input ng-model="info.email" />
+    <label>Skillsets</label> <input ng-model="info.skillsets" />
+    <label>Hobby</label> <input ng-model="info.hobby" />
+</form>
+<button ng-if="info.edit === false" ng-click="add()">Add</button>
+<button ng-if="info.edit === true" ng-click="edit()">Set</button>
+<button ng-if="info.edit === true" ng-click="delete()">Delete</button>

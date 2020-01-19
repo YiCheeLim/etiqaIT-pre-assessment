@@ -1,0 +1,22 @@
+<div style="flex-direction: row">
+    <h3>User List</h3>
+    <button ng-click="addUser()">add</button>
+</div>
+<div>
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Phone Number</th>
+            <th>Email</th>
+            <th>Skillsets</th>
+            <th>Hobby</th>
+        </tr>
+        <tr ng-repeat="user in userlist" ng-click="editUser( user )">
+            <td>{{user.username}}</td>
+            <td>{{user.phone}}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.skillsets}}</td>
+            <td>{{user.hobby}}</td>
+        </tr>
+    </table>
+</div>
