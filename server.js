@@ -30,14 +30,14 @@ app.post('/add-user', jsonParser, ( req, res ) => {
     });
 });
 app.post('/update-user', jsonParser, ( req, res ) => {
-    User.byEmail[req.body.email].edit( req.body.username, req.body.phone, req.body.email, req.body.skillsets, req.body.hobby );
-    
-    res.json( User.byEmail );
+    User.byEmail[req.body.email].edit( req.body.username, req.body.phone, req.body.email, req.body.skillsets, req.body.hobby ).then(() => {
+        res.json( User.byEmail );
+    });
 });
 app.post('/delete-user', jsonParser, ( req, res ) => {
-    User.byEmail[req.body.email].delete();
-    
-    res.json( User.byEmail );
+    User.byEmail[req.body.email].delete().then(() => {
+        res.json( User.byEmail );
+    });
 });
 
 app.listen( 80 );
@@ -79,7 +79,6 @@ const User = class {
             };
             client.db("Test").collection("User").insertOne( data , ( err, res ) => {
                 if ( err ) console.log( err );
-                // console.log( "add: ", res );
                 User.byEmail[ email ] = new User( data );
 
                 resolve();
@@ -88,26 +87,32 @@ const User = class {
     };
 
     edit ( username, phone, email, skillsets, hobby ) {
-        let data = {
-            username: username,
-            phone: phone,
-            email: email,
-            skillsets: skillsets,
-            hobby: hobby
-        };
-        client.db("Test").collection("User").updateOne( { email: this.email}, { $set: data } , ( err, res ) => {
-            if ( err ) console.log( err );
-            console.log( "add: ", res );
+        return new Promise (( resolve ) => {
+            let data = {
+                username: username,
+                phone: phone,
+                email: email,
+                skillsets: skillsets,
+                hobby: hobby
+            };
+            client.db("Test").collection("User").updateOne( { email: this.email}, { $set: data } , ( err, res ) => {
+                if ( err ) console.log( err );
+                delete User.byEmail[ this.email ];
+                User.byEmail[ email ] = new User( data );
+                resolve();
+            });
+    
         });
-
-        delete User.byEmail[ this.email ];
-        User.byEmail[ email ] = new User( data );
     }
 
     delete () {
-        client.db("Test").collection("User").deleteOne({ email: this.email });
-
-        delete User.byEmail[ this.email ];
+        return new Promise (( resolve ) => {
+            client.db("Test").collection("User").deleteOne({ email: this.email }, ( err, res ) => {
+                if ( err ) console.log( err );
+                delete User.byEmail[ this.email ];
+                resolve();
+            });    
+        });
     };
 };
 User.byEmail = {};
